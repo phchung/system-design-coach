@@ -1,0 +1,75 @@
+#overlay {
+  position: fixed;
+  top: 10px; /* Position from the top */
+  right: 10px; /* Position from the right */
+  width: 350px; /* Width of the overlay */
+  height: 240px; /* Height of the overlay */
+  background-color: white; /* Background color */
+  border-radius: 10px; /* Rounded borders */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Box shadow for depth */
+  z-index: 9999; /* Make sure the overlay appears on top of other elements */
+  overflow-y: auto; /* Enable vertical scrolling */
+  padding: 10px; /* Add padding for better appearance */
+}
+
+#overlay-content {
+    /* Optionally, you can style the content inside the overlay */
+    padding: 20px;
+    /* Add any additional styling as needed */
+}
+
+.message {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.message-icon {
+  margin-right: 8px;
+  font-size: 20px;
+}
+
+.user-icon {
+  color: #007bff; /* Blue color for user icon */
+}
+
+.system-icon {
+  color: #28a745; /* Green color for system icon */
+}
+
+.message-text {
+  flex-grow: 1;
+  overflow-wrap: break-word;
+}
+
+.message-timestamp {
+  color: #999;
+  font-size: 0.8em;
+}
+
+#recording-button {
+  position: absolute;
+  bottom: 10px; /* Adjust the distance from the bottom as needed */
+  left: 50%; /* Position the button at the horizontal center */
+  transform: translateX(-50%); /* Center the button horizontally */
+  background-color: #007bff; /* Blue color for the button */
+  color: #fff; /* White color for the button text */
+  border: none;
+  border-radius: 50%; /* Make the button circular */
+  width: 50px; /* Adjust width as needed */
+  height: 50px; /* Adjust height as needed */
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s; /* Add transition effect for smoother color change */
+}
+
+#recording-button.active {
+  background-color: #dc3545; /* Red color for the button when active (pressed) */
+}
+
+.recording-icon {
+  font-size: 24px;
+}

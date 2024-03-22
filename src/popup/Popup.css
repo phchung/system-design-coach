@@ -51,3 +51,13 @@ a {
   color: #cccccc;
   text-decoration: none;
 }
+
+#overlay {
+  position: fixed;
+  top: 0;
+  right: 0; /* Align to the top-right corner */
+  width: 200px; /* Adjust width as needed */
+  height: 150px; /* Adjust height as needed */
+  background-color: white;
+  z-index: 9999; /* Make sure the overlay appears on top of other elements */
+}

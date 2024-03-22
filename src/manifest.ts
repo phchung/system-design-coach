@@ -17,7 +17,7 @@ export default defineManifest({
   },
   action: {
     default_popup: 'popup.html',
-    default_icon: 'img/logo-48.png',
+    default_title: 'click me',  
   },
   options_page: 'options.html',
   devtools_page: 'devtools.html',
@@ -27,8 +27,9 @@ export default defineManifest({
   },
   content_scripts: [
     {
-      matches: ['http://*/*', 'https://*/*'],
+      matches: ["https://jamboard.google.com/*"],
       js: ['src/contentScript/index.ts'],
+      css: ['src/contentScript/content-script.css'],
     },
   ],
   side_panel: {
@@ -36,7 +37,7 @@ export default defineManifest({
   },
   web_accessible_resources: [
     {
-      resources: ['img/logo-16.png', 'img/logo-34.png', 'img/logo-48.png', 'img/logo-128.png'],
+      resources: ['img/logo-16.png', 'img/logo-34.png', 'img/logo-48.png', 'img/logo-128.png', 'src/contentScript/content-script.css'],
       matches: [],
     },
   ],
