@@ -3,19 +3,19 @@
   top: 10px; /* Position from the top */
   right: 10px; /* Position from the right */
   width: 350px; /* Width of the overlay */
-  height: 240px; /* Height of the overlay */
+  height: 300px; /* Height of the overlay */
   background-color: white; /* Background color */
   border-radius: 10px; /* Rounded borders */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Box shadow for depth */
   z-index: 9999; /* Make sure the overlay appears on top of other elements */
-  overflow-y: auto; /* Enable vertical scrolling */
   padding: 10px; /* Add padding for better appearance */
 }
 
 #overlay-content {
-    /* Optionally, you can style the content inside the overlay */
     padding: 20px;
-    /* Add any additional styling as needed */
+    overflow-y: auto; /* Enable vertical scrolling */
+    width: 350px; /* Width of the overlay */
+    height: 200px; /* Height of the overlay */
 }
 
 .message {

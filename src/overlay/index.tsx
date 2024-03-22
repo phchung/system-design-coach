@@ -32,6 +32,10 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
             timestamp: Date.now(),
             isSystemMessage
         };
+        var messageBody = document.querySelector('#overlay-content');
+        if (messageBody) {
+            messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
+        }
         setMessages(prevMessages => [...prevMessages, newMessage]);
     };
 
@@ -40,7 +44,7 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
         recognition = new (window as any).webkitSpeechRecognition(); // Type assertion
         recognition.lang = 'en-US';
         recognition.start();
-
+        addMessage("asdfadfs", false);
         recognition.onresult = (event: any) => {
             const transcript = event.results[0][0].transcript;
             addMessage(transcript, false);
@@ -73,7 +77,6 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
                         </div>
                         <div className="message-text">
                             {message.content}
-                            <span className="message-timestamp">{new Date(message.timestamp).toLocaleString()}</span>
                         </div>
                     </div>
                 ))}
