@@ -2,8 +2,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'chatGptApiRequest') {
     chrome.tabs.captureVisibleTab(null as any, {}, (dataUrl) => {
       const base64Image = dataUrl.split(',')[1]
-      // console.log('background')
-      // console.log(message.userMessage)
       // call chatgpt api here and send message
       const response = 'yep we got the message'
       // @ts-expect-error

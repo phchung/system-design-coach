@@ -27,6 +27,11 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
       isSystemMessage: true
     }))
     setMessages(initialMessagesWithTimestamps)
+
+    // Clean up the message listener when component unmounts
+    return () => {
+      chrome.runtime.onMessage.removeListener(handleMessage)
+    }
   }, [initialSystemMessages])
 
   useEffect(() => {
@@ -68,49 +73,46 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
 
     recognition.onerror = (event: any) => {
       console.error('Speech recognition error:', event.error)
-      recognition.stop() // Stop speech recognition
+      recognition.stop()
       setIsRecording(false)
     }
   }
 
-  // sendMessage;
-  const captureScreenshot: () => Promise<void> = async () => {
+  const chatGptRequest: () => Promise<void> = async () => {
     console.log('last user message: ' + lastUserMessage)
-    chrome.runtime.sendMessage(undefined, { action: 'chatGptApiRequest', userMessage: lastUserMessage }, (response) => {
-      console.log(response)
-    })
+    await chrome.runtime.sendMessage(undefined, { action: 'chatGptApiRequest', userMessage: lastUserMessage })
   }
 
   const stopRecording = () => {
     setIsRecording(false)
-    recognition.stop() // Stop speech recognition
-    captureScreenshot()
+    recognition.stop()
+    chatGptRequest()
   }
 
   return (
-        <div id="overlay">
-            <div id="overlay-content">
-                {messages.map((message, index) => (
-                    <div key={index} className={`message ${message.isSystemMessage ? 'system-message' : 'user-message'}`}>
-                        <div className="icon-container">
-                            {message.isSystemMessage
-                              ? (
-                                <FaRobot className="message-icon system-icon" />
-                                )
-                              : (
-                                <FaUser className="message-icon user-icon" />
-                                )}
-                        </div>
-                        <div className="message-text">
-                            {message.content}
-                        </div>
-                    </div>
-                ))}
+    <div id="overlay">
+      <div id="overlay-content">
+        {messages.map((message, index) => (
+          <div key={index} className={`message ${message.isSystemMessage ? 'system-message' : 'user-message'}`}>
+            <div className="icon-container">
+              {message.isSystemMessage
+                ? (
+                  <FaRobot className="message-icon system-icon" />
+                  )
+                : (
+                  <FaUser className="message-icon user-icon" />
+                  )}
             </div>
-            <button id="recording-button" onClick={isRecording ? stopRecording : startRecording}>
-                {isRecording ? <FaStop color="red"/> : <FaMicrophone />}
-            </button>
-        </div>
+            <div className="message-text">
+              {message.content}
+            </div>
+          </div>
+        ))}
+      </div>
+      <button id="recording-button" onClick={isRecording ? stopRecording : startRecording}>
+        {isRecording ? <FaStop color="red" /> : <FaMicrophone />}
+      </button>
+    </div>
   )
 }
 
