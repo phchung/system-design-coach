@@ -13,8 +13,11 @@ interface OverlayComponentProps {
 
 const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessages }) => {
   const [messages, setMessages] = useState<Message[]>([])
+  const [lastUserMessage, setLastUserMessage] = useState('')
   const [isRecording, setIsRecording] = useState<boolean>(false)
-  let recognition: any = null // Declare recognition outside the component to access it in stopRecording()
+  const recognition: any = new (window as any).webkitSpeechRecognition() // Type assertion
+  recognition.lang = 'en-US'
+  recognition.continue = true
 
   useEffect(() => {
     // Generate timestamps for initial system messages
@@ -26,6 +29,16 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
     setMessages(initialMessagesWithTimestamps)
   }, [initialSystemMessages])
 
+  useEffect(() => {
+    chrome.runtime.onMessage.addListener(handleMessage)
+  }, [])
+
+  const handleMessage = (message: { action: string, response: string }) => {
+    if (message.action === 'chatGptResponse') {
+      addMessage(message.response, true)
+    }
+  }
+
   const addMessage = (content: string, isSystemMessage: boolean) => {
     const newMessage = {
       content,
@@ -33,20 +46,21 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
       isSystemMessage
     }
     const messageBody = document.querySelector('#overlay-content')
-    if (messageBody) {
+    if (messageBody != null) {
       messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight
     }
     setMessages(prevMessages => [...prevMessages, newMessage])
+    if (!isSystemMessage) {
+      setLastUserMessage(content)
+    }
   }
 
-  const startRecording = () => {
+  const startRecording: () => void = () => {
     setIsRecording(true)
-    recognition = new (window as any).webkitSpeechRecognition() // Type assertion
-    recognition.lang = 'en-US'
     recognition.start()
-    addMessage('asdfadfs', false)
+    addMessage('yes lets do that', false)
     recognition.onresult = (event: any) => {
-      const transcript = event.results[0][0].transcript
+      const transcript: string = event.results[0][0].transcript
       addMessage(transcript, false)
       recognition.stop() // Stop speech recognition
       setIsRecording(false)
@@ -59,8 +73,18 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
     }
   }
 
+  // sendMessage;
+  const captureScreenshot: () => Promise<void> = async () => {
+    console.log('last user message: ' + lastUserMessage)
+    chrome.runtime.sendMessage(undefined, { action: 'chatGptApiRequest', userMessage: lastUserMessage }, (response) => {
+      console.log(response)
+    })
+  }
+
   const stopRecording = () => {
     setIsRecording(false)
+    recognition.stop() // Stop speech recognition
+    captureScreenshot()
   }
 
   return (
