@@ -32,9 +32,13 @@
 
 .message {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   font-family: 'Noto Sans';
   margin-bottom: 8px;
+}
+
+.icon-container {
+  align-self: flex-start;
 }
 
 .message-icon {
@@ -73,7 +77,6 @@
   width: 50px; /* Adjust width as needed */
   height: 50px; /* Adjust height as needed */
   font-size: 24px;
-  cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -98,3 +101,13 @@
     opacity: 0;
   }
 }
+
+/* HTML: <div class="loader"></div> */
+.loader {
+  width: 10px;
+  aspect-ratio: 4;
+  background: radial-gradient(circle closest-side,#000 90%,#0000) 0/calc(100%/3) 100% space;
+  clip-path: inset(0 100% 0 0);
+  animation: l1 1s steps(4) infinite;
+}
+@keyframes l1 {to{clip-path: inset(0 -34% 0 0)}}
