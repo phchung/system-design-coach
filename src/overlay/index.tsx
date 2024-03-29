@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FaMicrophone, FaStop, FaUser, FaRobot } from 'react-icons/fa';
+import { FaMicrophone, FaStop, FaRobot } from 'react-icons/fa';
+import { PiStudentBold } from "react-icons/pi";
 
 interface Message {
   content: string;
@@ -106,7 +107,7 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
               {message.isSystemMessage ? (
                 <FaRobot className="message-icon system-icon" />
               ) : (
-                <FaUser className="message-icon user-icon" />
+                <PiStudentBold className="message-icon user-icon" />
               )}
             </div>
             <div className="message-text">
