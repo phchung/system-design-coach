@@ -34,6 +34,7 @@
   display: flex;
   align-items: flex-start;
   font-family: 'Noto Sans';
+  margin-bottom: 8px;
 }
 
 .message-icon {
