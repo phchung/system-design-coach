@@ -2,7 +2,7 @@
   position: fixed;
   top: 10px; /* Position from the top */
   right: 10px; /* Position from the right */
-  width: 350px; /* Width of the overlay */
+  width: 400px; /* Width of the overlay */
   height: 300px; /* Height of the overlay */
   background-color: white; /* Background color */
   border-radius: 10px; /* Rounded borders */
@@ -32,8 +32,8 @@
 
 .message {
   display: flex;
-  align-items: center;
-  margin-bottom: 8px;
+  align-items: flex-start;
+  font-family: 'Noto Sans';
 }
 
 .message-icon {
@@ -52,6 +52,7 @@
 .message-text {
   flex-grow: 1;
   overflow-wrap: break-word;
+  margin-bottom: 5px;
 }
 
 .message-timestamp {
@@ -76,4 +77,23 @@
   justify-content: center;
   align-items: center;
   transition: background-color 0.3s; /* Add transition effect for smoother color change */
+}
+
+.cursor {
+  display: inline-block;
+  width: 1ch;
+  animation: flicker 0.5s infinite;
+  margin-bottom: 4px;
+}
+
+@keyframes flicker {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
