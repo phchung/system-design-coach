@@ -17,10 +17,10 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      port: 5173,
+      port: 3000,
       strictPort: true,
       hmr: {
-        port: 5173,
+        port: 3000,
       },
     },
     plugins: [crx({ manifest }), react()],

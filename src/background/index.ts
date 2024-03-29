@@ -1,4 +1,5 @@
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  console.log("background listener active")
   if (message.action === 'chatGptApiRequest') {
     chrome.tabs.captureVisibleTab(null as any, {}, (dataUrl) => {
       const base64Image = dataUrl.split(',')[1]

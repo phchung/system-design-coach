@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { FaMicrophone, FaMicrophoneSlash, FaStop, FaRobot } from 'react-icons/fa'
-import { PiStudentBold } from 'react-icons/pi'
+import { FaMicrophone, FaMicrophoneSlash, FaStop } from 'react-icons/fa'
+import { PiStudentBold, PiChalkboardTeacherDuotone } from 'react-icons/pi'
 
 interface Message {
   content: string
@@ -92,10 +92,12 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
       console.error('Speech recognition error:', event.error)
       recognition.stop()
       setIsRecording(false)
+      setIsResponseLoading(false)
     }
   }
 
   const sendRecording: () => Promise<void> = async () => {
+    console.log("sendRecording")
     await chrome.runtime.sendMessage(undefined, {
       action: 'chatGptApiRequest',
       userMessage: lastSystemMessage,
@@ -106,8 +108,7 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
     setIsRecording(false)
     recognition.stop()
     setIsResponseLoading(true)
-    setTimeout(() => sendRecording(), 5000)
-    // sendRecording();
+    sendRecording();
   }
 
   return (
@@ -120,7 +121,7 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
           >
             <div className="icon-container">
               {message.isSystemMessage ? (
-                <FaRobot className="message-icon system-icon" />
+                <PiChalkboardTeacherDuotone className="message-icon system-icon" />
               ) : (
                 <PiStudentBold className="message-icon user-icon" />
               )}
@@ -144,7 +145,7 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
           {isResponseLoading && (
             <div className={`message system-message`}>
               <div className="icon-container">
-                <FaRobot className="message-icon system-icon" />
+                <PiChalkboardTeacherDuotone className="message-icon system-icon" />
               </div>
               <div className="loader"></div>
             </div>
