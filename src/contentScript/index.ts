@@ -1,31 +1,5 @@
 console.info('contentScript is running')
 
-chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-    if (message.blockingEnabled) {
-      document.body.style.pointerEvents = "none";
-      // You can add more logic to disable specific elements or intercept events
-    } else {
-      document.body.style.pointerEvents = "auto";
-    }
-  });
-
-
-// // Create the overlay element
-// const overlay = document.createElement('div');
-// overlay.id = 'overlay';
-// overlay.innerHTML = `
-//     <div id="overlay-content">
-//         This is your overlay contentttt.
-//     </div>
-// `;
-
-// const html = document.querySelector('html');
-// if (html) {
-//   html.appendChild(overlay);
-// }
-
-
-// contentScript.js
 import React from 'react';
 import ReactDOM from 'react-dom';
 import OverlayComponent from '../overlay/index';
@@ -38,6 +12,6 @@ document.body.appendChild(app);
 
 // Render the OverlayComponent using React.createElement
 ReactDOM.render(
-    React.createElement(OverlayComponent, { initialSystemMessages }), // Equivalent to <OverlayComponent messages={messages} />
-    app
+  React.createElement(OverlayComponent, { initialSystemMessages }), // Equivalent to <OverlayComponent messages={messages} />
+  app
 );

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { FaMicrophone, FaMicrophoneSlash, FaStop } from 'react-icons/fa'
 import { PiStudentBold, PiChalkboardTeacherDuotone } from 'react-icons/pi'
+// @ts-ignore
+import OpenAIClient from '../api/chatGptClient.js';
 
 interface Message {
   content: string
@@ -23,6 +25,7 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
   recognition.continue = true
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  // const openAiClient = new OpenAIClient("", "");
 
   useEffect(() => {
     // Generate timestamps for initial system messages
@@ -34,7 +37,6 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
       }),
     )
     setMessages(initialMessagesWithTimestamps)
-
     // Clean up the message listener when component unmounts
     return () => {
       chrome.runtime.onMessage.removeListener(handleMessage)
@@ -90,6 +92,13 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
 
     recognition.onerror = (event: any) => {
       console.error('Speech recognition error:', event.error)
+      recognition.stop()
+      setIsRecording(false)
+      setIsResponseLoading(false)
+    }
+
+    recognition.onabort = (event: any) => {
+      console.error('Speech recognition abort:', event.error)
       recognition.stop()
       setIsRecording(false)
       setIsResponseLoading(false)

@@ -24,7 +24,7 @@ export default defineManifest({
   },
   content_scripts: [
     {
-      matches: ['https://jamboard.google.com/*'],
+      matches: ['https://www.figma.com/board/*'],
       js: ['src/contentScript/index.ts'],
       css: ['src/contentScript/content-script.css']
     }
