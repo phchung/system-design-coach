@@ -21,7 +21,7 @@
     "preview": "vite preview",
     "fmt": "prettier --write '**/*.{tsx,ts,json,css,scss,md}'",
     "zip": "npm run build && node src/zip.js",
-    "watch": "tsc && vite build --watch"
+    "watch": "watch 'tsc && vite build' ./src"
   },
   "dependencies": {
     "openai": "^4.30.0",
