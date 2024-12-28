@@ -28,20 +28,22 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
   // const openAiClient = new OpenAIClient("", "");
 
   useEffect(() => {
-    // Generate timestamps for initial system messages
-    const initialMessagesWithTimestamps: Message[] = initialSystemMessages.map(
-      (message, index) => ({
-        content: message,
-        timestamp: Date.now() + index, // Adding index to ensure unique timestamps
-        isSystemMessage: true,
-      }),
-    )
-    setMessages(initialMessagesWithTimestamps)
-    // Clean up the message listener when component unmounts
-    return () => {
-      chrome.runtime.onMessage.removeListener(handleMessage)
-    }
-  }, [initialSystemMessages])
+    // Initialize messages with content from initialSystemMessages
+    const initialMessagesWithTimestamps: Message[] = initialSystemMessages.map((message, index) => ({
+      content: message, // Set directly to the message
+      timestamp: Date.now() + index,
+      isSystemMessage: true,
+    }));
+    setMessages(initialMessagesWithTimestamps);
+
+    // Sequentially add system messages with typewriter effect
+    initialSystemMessages.forEach((message, index) => {
+      setTimeout(() => {
+        addMessage(message, true);
+      }, index * 1000); // Adjust timing for typewriter delay between messages
+    });
+  }, [initialSystemMessages]);
+
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener(handleMessage)
@@ -66,18 +68,38 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
   }
 
   const addMessage = (content: string, isSystemMessage: boolean) => {
-    const newMessage = {
-      content,
-      timestamp: Date.now(),
-      isSystemMessage,
-    }
-    scrollChatToBottom();
-    setMessages((prevMessages) => [...prevMessages, newMessage])
     if (isSystemMessage) {
-      setLastSystemMessage(content)
-      setIsTypingEffectEnabled(true)
+      setIsTypingEffectEnabled(true);
+      setLastSystemMessage(content);
+
+      let index = 0;
+      const intervalId = setInterval(() => {
+        setMessages((prevMessages) => {
+          const lastMessage = prevMessages[prevMessages.length - 1];
+          const updatedContent = lastMessage.isSystemMessage
+            ? content.substring(0, index + 1)
+            : content;
+
+          return [
+            ...prevMessages.slice(0, prevMessages.length - 1),
+            { ...lastMessage, content: updatedContent },
+          ];
+        });
+        index++;
+
+        if (index === content.length) {
+          clearInterval(intervalId);
+          setIsTypingEffectEnabled(false);
+        }
+      }, 30);
+    } else {
+      // Directly add user messages
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { content, timestamp: Date.now(), isSystemMessage: false },
+      ]);
     }
-  }
+  };
 
   const startRecording: () => void = () => {
     setIsRecording(true)
