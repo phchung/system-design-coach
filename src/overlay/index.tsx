@@ -28,14 +28,6 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
   // const openAiClient = new OpenAIClient("", "");
 
   useEffect(() => {
-    // Initialize messages with content from initialSystemMessages
-    const initialMessagesWithTimestamps: Message[] = initialSystemMessages.map((message, index) => ({
-      content: message, // Set directly to the message
-      timestamp: Date.now() + index,
-      isSystemMessage: true,
-    }));
-    setMessages(initialMessagesWithTimestamps);
-
     // Sequentially add system messages with typewriter effect
     initialSystemMessages.forEach((message, index) => {
       setTimeout(() => {
@@ -72,19 +64,32 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
       setIsTypingEffectEnabled(true);
       setLastSystemMessage(content);
 
+      // Add a new placeholder message without modifying previous messages
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { content: "", timestamp: Date.now(), isSystemMessage: true }, // Placeholder for the new message
+      ]);
+
       let index = 0;
       const intervalId = setInterval(() => {
         setMessages((prevMessages) => {
+          // Avoid recreating the entire array; only modify the last message
           const lastMessage = prevMessages[prevMessages.length - 1];
-          const updatedContent = lastMessage.isSystemMessage
-            ? content.substring(0, index + 1)
-            : content;
 
+          // If the last message already has the full content, do nothing
+          if (lastMessage.content === content) {
+            clearInterval(intervalId);
+            setIsTypingEffectEnabled(false);
+            return prevMessages;
+          }
+
+          // Update only the last message content
           return [
-            ...prevMessages.slice(0, prevMessages.length - 1),
-            { ...lastMessage, content: updatedContent },
+            ...prevMessages.slice(0, -1), // Keep all but the last message unchanged
+            { ...lastMessage, content: content.substring(0, index + 1) },
           ];
         });
+
         index++;
 
         if (index === content.length) {
@@ -94,6 +99,7 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
       }, 30);
     } else {
       // Directly add user messages
+      console.log(content)
       setMessages((prevMessages) => [
         ...prevMessages,
         { content, timestamp: Date.now(), isSystemMessage: false },
@@ -104,9 +110,9 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
   const startRecording: () => void = () => {
     setIsRecording(true)
     recognition.start()
-    addMessage('yes lets do that', false)
     recognition.onresult = (event: any) => {
       const transcript: string = event.results[0][0].transcript
+      console.log(transcript)
       addMessage(transcript, false)
       recognition.stop() // Stop speech recognition
       setIsRecording(false)
@@ -126,20 +132,28 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
       setIsResponseLoading(false)
     }
   }
+  const sleep = (ms: number) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 
   const sendRecording: () => Promise<void> = async () => {
     console.log("sendRecording")
-    await chrome.runtime.sendMessage(undefined, {
-      action: 'chatGptApiRequest',
-      userMessage: lastSystemMessage,
-    })
+
+    addMessage("Recording have been sent, good job", true)
+    // await chrome.runtime.sendMessage(undefined, {
+    //   action: 'chatGptApiRequest',
+    //   userMessage: lastSystemMessage,
+    // })
+
+    setIsResponseLoading(false)
   }
 
   const stopRecording = () => {
     setIsRecording(false)
     recognition.stop()
     setIsResponseLoading(true)
-    sendRecording();
+    setTimeout(sendRecording, 5000)
+    // sendRecording();
   }
 
   return (
