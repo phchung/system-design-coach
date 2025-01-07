@@ -20,9 +20,36 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
   const [isTypingEffectEnabled, setIsTypingEffectEnabled] = useState(false)
   const [isRecording, setIsRecording] = useState<boolean>(false)
   const [isResponseLoading, setIsResponseLoading] = useState<boolean>(false)
+  const [transcript, setTranscript] = useState('')
   const recognition: any = new (window as any).webkitSpeechRecognition() // Type assertion
   recognition.lang = 'en-US'
-  recognition.continue = true
+  recognition.continuous = true
+
+  recognition.onresult = (event: any) => {
+    if (event.results[event.resultIndex].isFinal) {
+      let transcript = '';
+      const lastResult = event.results[event.resultIndex];
+      transcript += lastResult[0].transcript;
+      setTranscript((prevTranscript) => prevTranscript + ' ' + transcript);
+    }
+  };
+
+  recognition.onerror = (event: any) => {
+    console.error('Speech recognition error:', event.error)
+    console.log(event)
+    recognition.onend = null;
+    recognition.stop()
+    setIsRecording(false)
+    setIsResponseLoading(false)
+  }
+
+  recognition.onabort = (event: any) => {
+    console.error('Speech recognition abort:', event.error)
+    recognition.onend = null;
+    recognition.stop()
+    setIsRecording(false)
+    setIsResponseLoading(false)
+  }
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   // const openAiClient = new OpenAIClient("", "");
@@ -35,7 +62,6 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
       }, index * 1000); // Adjust timing for typewriter delay between messages
     });
   }, [initialSystemMessages]);
-
 
   useEffect(() => {
     chrome.runtime.onMessage.addListener(handleMessage)
@@ -99,7 +125,6 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
       }, 30);
     } else {
       // Directly add user messages
-      console.log(content)
       setMessages((prevMessages) => [
         ...prevMessages,
         { content, timestamp: Date.now(), isSystemMessage: false },
@@ -108,37 +133,17 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
   };
 
   const startRecording: () => void = () => {
-    setIsRecording(true)
+    recognition.onend = () => { recognition.start(); }
     recognition.start()
-    recognition.onresult = (event: any) => {
-      const transcript: string = event.results[0][0].transcript
-      console.log(transcript)
-      addMessage(transcript, false)
-      recognition.stop() // Stop speech recognition
-      setIsRecording(false)
-    }
-
-    recognition.onerror = (event: any) => {
-      console.error('Speech recognition error:', event.error)
-      recognition.stop()
-      setIsRecording(false)
-      setIsResponseLoading(false)
-    }
-
-    recognition.onabort = (event: any) => {
-      console.error('Speech recognition abort:', event.error)
-      recognition.stop()
-      setIsRecording(false)
-      setIsResponseLoading(false)
-    }
+    setIsRecording(true)
   }
+
   const sleep = (ms: number) => {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   const sendRecording: () => Promise<void> = async () => {
-    console.log("sendRecording")
-
+    setIsResponseLoading(true)
     addMessage("Recording have been sent, good job", true)
     // await chrome.runtime.sendMessage(undefined, {
     //   action: 'chatGptApiRequest',
@@ -149,12 +154,18 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
   }
 
   const stopRecording = () => {
-    setIsRecording(false)
-    recognition.stop()
-    setIsResponseLoading(true)
-    setTimeout(sendRecording, 5000)
-    // sendRecording();
-  }
+    console.log("stop recording");
+    recognition.onend = null;
+    recognition.stop();
+
+    // Add a slight delay to simulate processing time (optional)
+    setTimeout(() => {
+      addMessage(transcript, false); // Add transcript message
+      setTranscript(''); // Clear transcript state
+      setIsRecording(false);
+      // sendRecording(); // Initiate sending the recording for processing
+    }, 2000);
+  };
 
   return (
     <div id="overlay">
