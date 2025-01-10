@@ -1,0 +1,113 @@
+#overlay {
+  position: fixed;
+  top: 10px; /* Position from the top */
+  right: 10px; /* Position from the right */
+  width: 400px; /* Width of the overlay */
+  height: 300px; /* Height of the overlay */
+  background-color: white; /* Background color */
+  border-radius: 10px; /* Rounded borders */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Box shadow for depth */
+  z-index: 9999; /* Make sure the overlay appears on top of other elements */
+  padding: 10px; /* Add padding for better appearance */
+}
+
+#overlay-content {
+  padding: 20px;
+  overflow-y: auto; /* Enable vertical scrolling */
+  width: calc(100% - 20px); /* Adjust width to account for padding */
+  max-height: calc(100% - 100px); /* Adjust max-height to fit button and padding */
+}
+
+#overlay-content::-webkit-scrollbar {
+  width: 10px; /* Width of the scrollbar */
+}
+
+#overlay-content::-webkit-scrollbar-thumb {
+  background-color: #555; /* Darker gray color for scrollbar thumb */
+}
+
+#overlay-content::-webkit-scrollbar-track {
+  background-color: #f4f4f4; /* Background color for scrollbar track */
+}
+
+.message {
+  display: flex;
+  align-items: stretch;
+  font-family: 'Noto Sans';
+  margin-bottom: 10px;
+}
+
+.icon-container {
+  align-self: flex-start;
+}
+
+.message-icon {
+  margin-right: 8px;
+  font-size: 20px;
+}
+
+.user-icon {
+  color: #007bff; /* Blue color for user icon */
+}
+
+.system-icon {
+  color: #28a745; /* Green color for system icon */
+}
+
+.message-text {
+  flex-grow: 1;
+  overflow-wrap: break-word;
+  margin-bottom: 5px;
+}
+
+.message-timestamp {
+  color: #999;
+  font-size: 0.8em;
+}
+
+#recording-button {
+  position: absolute;
+  bottom: 10px; /* Adjust the distance from the bottom as needed */
+  left: 50%; /* Position the button at the horizontal center */
+  transform: translateX(-50%); /* Center the button horizontally */
+  background-color: #c6d1dc; /* Blue color for the button */
+  color: #fff; /* White color for the button text */
+  border: none;
+  border-radius: 50%; /* Make the button circular */
+  width: 50px; /* Adjust width as needed */
+  height: 50px; /* Adjust height as needed */
+  font-size: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s; /* Add transition effect for smoother color change */
+}
+
+.cursor {
+  display: inline-block;
+  width: 1ch;
+  animation: flicker 0.5s infinite;
+  margin-bottom: 4px;
+}
+
+@keyframes flicker {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* HTML: <div class="loader"></div> */
+.loader {
+  width: 10px;
+  aspect-ratio: 4;
+  background: radial-gradient(circle closest-side,#000 90%,#0000) 0/calc(100%/3) 100% space;
+  clip-path: inset(0 100% 0 0);
+  animation: l1 1s steps(4) infinite;
+}
+@keyframes l1 {to{clip-path: inset(0 -34% 0 0)}}

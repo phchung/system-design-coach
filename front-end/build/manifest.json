@@ -1,0 +1,62 @@
+{
+  "name": "SystemDesignCoach",
+  "description": "",
+  "version": "0.0.0",
+  "manifest_version": 3,
+  "icons": {
+    "16": "img/logo-16.png",
+    "32": "img/logo-34.png",
+    "48": "img/logo-48.png",
+    "128": "img/logo-128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "click me"
+  },
+  "background": {
+    "service_worker": "service-worker-loader.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "assets/index.ts-loader-cd6dec0a.js"
+      ],
+      "matches": [
+        "https://www.figma.com/board/*"
+      ],
+      "css": [
+        "src/contentScript/content-script.css"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "matches": [],
+      "resources": [
+        "img/logo-16.png",
+        "img/logo-34.png",
+        "img/logo-48.png",
+        "img/logo-128.png",
+        "src/contentScript/content-script.css"
+      ],
+      "use_dynamic_url": false
+    },
+    {
+      "matches": [
+        "https://www.figma.com/*"
+      ],
+      "resources": [
+        "assets/chunk-7435faac.js",
+        "assets/chunk-7990dd20.js"
+      ],
+      "use_dynamic_url": false
+    }
+  ],
+  "permissions": [
+    "sidePanel",
+    "storage",
+    "tabs",
+    "activeTab"
+  ]
+}
