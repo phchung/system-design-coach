@@ -23,14 +23,16 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
   const [transcript, setTranscript] = useState('')
   const recognition: any = new (window as any).webkitSpeechRecognition() // Type assertion
   recognition.lang = 'en-US'
-  recognition.continuous = true
+  recognition.continuous = true;
+
+
 
   recognition.onresult = (event: any) => {
     if (event.results[event.resultIndex].isFinal) {
       let transcript = '';
       const lastResult = event.results[event.resultIndex];
       transcript += lastResult[0].transcript;
-      setTranscript((prevTranscript) => prevTranscript + ' ' + transcript);
+      // setTranscript((prevTranscript) => prevTranscript + ' ' + transcript);
     }
   };
 
@@ -39,6 +41,7 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
     console.log(event)
     recognition.onend = null;
     recognition.stop()
+    recognition.abort()
     setIsRecording(false)
     setIsResponseLoading(false)
   }
@@ -47,8 +50,13 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
     console.error('Speech recognition abort:', event.error)
     recognition.onend = null;
     recognition.stop()
+    recognition.abort()
     setIsRecording(false)
     setIsResponseLoading(false)
+  }
+
+  recognition.onend = () => {
+    console.log("ON END")
   }
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -67,9 +75,9 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
     chrome.runtime.onMessage.addListener(handleMessage)
   }, [])
 
-  useEffect(() => {
-    scrollChatToBottom()
-  }, [isResponseLoading])
+  // useEffect(() => {
+  //   scrollChatToBottom()
+  // }, [isResponseLoading])
 
   const handleMessage = (message: { action: string; response: string }) => {
     if (message.action === 'chatGptResponse') {
@@ -133,10 +141,22 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
   };
 
   const startRecording: () => void = () => {
-    recognition.onend = () => { recognition.start(); }
-    recognition.start()
     setIsRecording(true)
+    recognition.onend = () => {
+      console.log("ON END")
+      recognition.start();
+    }
+    console.log("recongition.start")
+    recognition.start()
   }
+
+  const stopRecording = () => {
+    console.log("stop recording")
+    recognition.onend = null;
+    recognition.stop();
+    setIsRecording(false)
+    addMessage(transcript, false)
+  };
 
   const sleep = (ms: number) => {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -152,20 +172,6 @@ const OverlayComponent: React.FC<OverlayComponentProps> = ({ initialSystemMessag
 
     setIsResponseLoading(false)
   }
-
-  const stopRecording = () => {
-    console.log("stop recording");
-    recognition.onend = null;
-    recognition.stop();
-
-    // Add a slight delay to simulate processing time (optional)
-    setTimeout(() => {
-      addMessage(transcript, false); // Add transcript message
-      setTranscript(''); // Clear transcript state
-      setIsRecording(false);
-      // sendRecording(); // Initiate sending the recording for processing
-    }, 2000);
-  };
 
   return (
     <div id="overlay">
